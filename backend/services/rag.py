@@ -18,6 +18,9 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 
 retriever = vectorstore.as_retriever()
 prompt = hub.pull("rlm/rag-prompt")
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
+
 llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
 
 
@@ -25,6 +28,9 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
+qa_chain = RetrievalQA.from_chain_type(
+    llm, retriever=vectorstore.as_retriever(), chain_type_kwargs={"prompt": prompt}
+)
 rag_chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()}
     | prompt

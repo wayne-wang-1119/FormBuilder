@@ -1,0 +1,1 @@
+{"input": [{"title": "what is the theme of this book?", "description": "describe the theme of the book please"}], "checkbox": [{"label": "book genre: knowldge", "value": true}], "radial": [{"name": "default name", "rating": 50}], "radio": [{"groupName": "book audience", "options": ["Allen", "Kyle"], "selectedOption": "Kyle"}]}

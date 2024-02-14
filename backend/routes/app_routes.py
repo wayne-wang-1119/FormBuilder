@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import html2text
 
 # from services.weaviate import client
-from services import rag_chain
+from services import rag_chain, qa_chain
 
 load_dotenv()
 
@@ -38,17 +38,20 @@ def create_form():
     responses = {}
     for question in form_data.get("input", []):
         prompt = f"Based on the content {question['description']} what is the answer?\nAnswer the question: {question['title']}"
-        response = rag_chain.invoke(prompt)
+        # response = rag_chain.invoke(prompt)
+        response = qa_chain({"query": prompt})["result"]
         responses[question["title"]] = response
 
     for question in form_data.get("radio", []):
         prompt = f"Based on the content {question['options']} and the selected options {question['selectedOption']} what is the answer?\nAnswer the question: {question['groupName']}"
-        response = rag_chain.invoke(prompt)
+        # response = rag_chain.invoke(prompt)
+        response = qa_chain({"query": prompt})["result"]
         responses[question["groupName"]] = response
 
     for question in form_data.get("checkbox", []):
         prompt = f"Based on the {question['label']} being selected as {question['value']} what is the answer?\nAnswer the question"
-        response = rag_chain.invoke(prompt)
+        # response = rag_chain.invoke(prompt)
+        response = qa_chain({"query": prompt})["result"]
         responses[question["label"]] = response
 
     return jsonify({"success": True, "form_id": form_id, "response": responses}), 200

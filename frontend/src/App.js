@@ -4,14 +4,27 @@ import { addCheckbox, addInput, addRadial } from "./services/formsServices";
 const App = () => {
   const [responses, setResponses] = useState({});
   const [form, setForm] = useState({
-    input: [{ title: "default title", description: "default description" }],
-    checkbox: [{ label: "default label", value: true }],
+    input: [
+      {
+        title: "what is the theme of this book?",
+        description: "describe the theme of the book",
+      },
+      {
+        title: "what is a good work mentality?",
+        description: "describe the good work example/story in the book",
+      },
+    ],
+    checkbox: [
+      { label: "This book is for adults", value: true },
+      { label: "This book is for fun", value: true },
+    ],
     radial: [{ name: "default name", rating: 50 }],
     radio: [
       {
-        groupName: "defaultGroup",
-        options: ["Option 1", "Option 2"],
-        selectedOption: "Option 1",
+        groupName:
+          "The book proposes good working locations, given the selected option, which one is correct?",
+        options: ["San Francisco", "Atlanta", "Mars"],
+        selectedOption: "San Francisco",
       },
     ],
   });
