@@ -1,10 +1,12 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db
 from routes import configure_routes
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 # database_path = os.path.join(os.getcwd(), "db", "forms.db")
 # if not os.path.exists(database_path):
