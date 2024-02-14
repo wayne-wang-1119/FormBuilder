@@ -1,0 +1,21 @@
+{
+  "input": [
+    {
+      "title": "default title",
+      "description": "default description"
+    }
+  ],
+  "checkbox": [
+    {
+      "label": "default label",
+      "checked": true
+    }
+  ],
+
+  "radial": [
+    {
+      "name": "default name",
+      "rating": 50
+    }
+  ]
+}
