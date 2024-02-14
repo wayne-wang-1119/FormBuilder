@@ -1,6 +1,8 @@
-import React, { useState, ChangeEvent } from "react";
-import { Input, CheckBoxItem, Radial, FormState } from "./model/model";
-import { addCheckbox, addInput, addRadial } from "./services/formsServices";
+"use client";
+
+import React, { useState } from "react";
+import { Input, CheckBoxItem, Radial, FormState } from "../model/model";
+import { addCheckbox, addInput, addRadial } from "../services/formService";
 
 const App = () => {
   const [form, setForm] = useState<FormState>({

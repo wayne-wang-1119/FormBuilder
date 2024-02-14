@@ -20,7 +20,7 @@ def hello_world():
 
 @app.route("/forms")
 def create_form():
-    return "form creation"
+    return jsonify({"success": "creation success"}), 200
 
 
 @app.route("/update/forms/{formId}")
@@ -28,7 +28,7 @@ def update_form():
     return "form updated"
 
 
-@app.route("view/forms/{formId}")
+@app.route("/view/forms/{formId}")
 def view_forms():
     return "viewiing forms"
 
