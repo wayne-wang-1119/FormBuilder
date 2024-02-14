@@ -6,10 +6,12 @@ from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.document_loaders import UnstructuredHTMLLoader
 
 
 # Load, chunk and index the contents of the blog.
-loader = WebBaseLoader(web_paths=("https://www.paulgraham.com/greatwork.html/",))
+# loader = WebBaseLoader(web_paths=("https://www.paulgraham.com/greatwork.html/",))
+loader = UnstructuredHTMLLoader("data/data.html")
 docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -29,7 +31,9 @@ def format_docs(docs):
 
 
 qa_chain = RetrievalQA.from_chain_type(
-    llm, retriever=vectorstore.as_retriever(), chain_type_kwargs={"prompt": prompt}
+    llm,
+    retriever=vectorstore.as_retriever(search_kwargs={"k": 1}),
+    chain_type_kwargs={"prompt": prompt},
 )
 rag_chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()}

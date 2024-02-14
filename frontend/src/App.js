@@ -15,16 +15,18 @@ const App = () => {
       },
     ],
     checkbox: [
-      { label: "This book is for adults", value: true },
-      { label: "This book is for fun", value: true },
+      {
+        question: "Which of these themes are present in the book?",
+        options: ["Adventure", "Romance", "Mystery"],
+        selectedOptions: ["Adventure"],
+      },
     ],
     radial: [{ name: "default name", rating: 50 }],
     radio: [
       {
-        groupName:
-          "The book proposes good working locations, given the selected option, which one is correct?",
-        options: ["San Francisco", "Atlanta", "Mars"],
-        selectedOption: "San Francisco",
+        question: "Which city is best for the setting of the story?",
+        options: ["New York", "Paris", "Tokyo"],
+        selectedOption: "New York",
       },
     ],
   });
@@ -118,6 +120,52 @@ const App = () => {
     setForm({ ...form, radio: updatedRadios });
   };
 
+  const handleCheckboxQuestionChange = (index, value) => {
+    const updatedCheckbox = [...form.checkbox];
+    updatedCheckbox[index].question = value;
+    setForm({ ...form, checkbox: updatedCheckbox });
+  };
+
+  // Handle selection changes for checkbox options
+  const handleCheckboxOptionChange = (qIndex, option) => {
+    const updatedCheckbox = [...form.checkbox];
+    const selectedOptions = updatedCheckbox[qIndex].selectedOptions;
+    if (selectedOptions.includes(option)) {
+      updatedCheckbox[qIndex].selectedOptions = selectedOptions.filter(
+        (opt) => opt !== option
+      );
+    } else {
+      updatedCheckbox[qIndex].selectedOptions.push(option);
+    }
+    setForm({ ...form, checkbox: updatedCheckbox });
+  };
+
+  // Handle text changes for each option
+  const handleOptionTextChange = (qIndex, oIndex, value) => {
+    const updatedCheckbox = [...form.checkbox];
+    updatedCheckbox[qIndex].options[oIndex] = value;
+    setForm({ ...form, checkbox: updatedCheckbox });
+  };
+
+  // Add a new option to a checkbox question
+  const handleAddOption = (qIndex) => {
+    const updatedCheckbox = [...form.checkbox];
+    updatedCheckbox[qIndex].options.push("");
+    updatedCheckbox[qIndex].selectedOptions.push(""); // Optionally, adjust as needed
+    setForm({ ...form, checkbox: updatedCheckbox });
+  };
+
+  // Add a new checkbox question
+  const handleAddCheckboxQuestion = () => {
+    setForm({
+      ...form,
+      checkbox: [
+        ...form.checkbox,
+        { question: "", options: [""], selectedOptions: [""] },
+      ],
+    });
+  };
+
   // Add Radio Group
   const handleAddRadioGroup = () => {
     const newGroup = {
@@ -128,17 +176,43 @@ const App = () => {
     setForm({ ...form, radio: [...form.radio, newGroup] });
   };
 
-  // Add Radio Option
-  const handleAddRadioOption = (groupName) => {
-    const updatedRadios = form.radio.map((group) =>
-      group.groupName === groupName
-        ? {
-            ...group,
-            options: [...group.options, `Option ${group.options.length + 1}`],
-          }
-        : group
-    );
-    setForm({ ...form, radio: updatedRadios });
+  // Handle changes to the radio question text
+  const handleRadioQuestionChange = (index, value) => {
+    const updatedRadio = [...form.radio];
+    updatedRadio[index].question = value;
+    setForm({ ...form, radio: updatedRadio });
+  };
+
+  // Handle selection change for radio options
+  const handleRadioSelectionChange = (qIndex, option) => {
+    const updatedRadio = [...form.radio];
+    updatedRadio[qIndex].selectedOption = option;
+    setForm({ ...form, radio: updatedRadio });
+  };
+
+  // Handle text changes for each radio option
+  const handleRadioOptionTextChange = (qIndex, oIndex, value) => {
+    const updatedRadio = [...form.radio];
+    updatedRadio[qIndex].options[oIndex] = value;
+    setForm({ ...form, radio: updatedRadio });
+  };
+
+  // Add a new option to a radio question
+  const handleAddRadioOption = (qIndex) => {
+    const updatedRadio = [...form.radio];
+    updatedRadio[qIndex].options.push("");
+    setForm({ ...form, radio: updatedRadio });
+  };
+
+  // Add a new radio question
+  const handleAddRadioQuestion = () => {
+    setForm({
+      ...form,
+      radio: [
+        ...form.radio,
+        { question: "", options: [""], selectedOption: "" },
+      ],
+    });
   };
 
   return (
@@ -168,25 +242,41 @@ const App = () => {
         <button onClick={handleAddInput}>Add Input</button>
       </div>
 
-      {/* Checkboxes */}
       <div>
-        <h3>Checkboxes</h3>
-        {form.checkbox.map((checkbox, index) => (
-          <div key={index}>
-            <input
-              type="checkbox"
-              checked={checkbox.value}
-              onChange={() => handleCheckboxChange(index)}
-            />
+        <h3>Checkbox Questions</h3>
+        {form.checkbox.map((checkboxQuestion, qIndex) => (
+          <div key={qIndex}>
             <input
               type="text"
-              value={checkbox.label}
-              onChange={(e) => handleCheckboxLabelChange(index, e.target.value)}
-              placeholder="Label"
+              value={checkboxQuestion.question}
+              onChange={(e) =>
+                handleCheckboxQuestionChange(qIndex, e.target.value)
+              }
+              placeholder="Question"
             />
+            {checkboxQuestion.options.map((option, oIndex) => (
+              <div key={oIndex}>
+                <input
+                  type="checkbox"
+                  checked={checkboxQuestion.selectedOptions.includes(option)}
+                  onChange={() => handleCheckboxOptionChange(qIndex, option)}
+                />
+                <input
+                  type="text"
+                  value={option}
+                  onChange={(e) =>
+                    handleOptionTextChange(qIndex, oIndex, e.target.value)
+                  }
+                  placeholder="Option"
+                />
+              </div>
+            ))}
+            <button onClick={() => handleAddOption(qIndex)}>Add Option</button>
           </div>
         ))}
-        <button onClick={handleAddCheckbox}>Add Checkbox</button>
+        <button onClick={handleAddCheckboxQuestion}>
+          Add Checkbox Question
+        </button>
       </div>
 
       {/* Radials */}
@@ -214,28 +304,42 @@ const App = () => {
       </div>
       {/* Radios */}
       <div>
-        <h3>Radio Buttons</h3>
-        {form.radio.map((group, index) => (
-          <div key={index}>
-            <h4>{group.groupName}</h4>
-            {group.options.map((option, optionIndex) => (
-              <label key={optionIndex}>
+        <h3>Radio Questions</h3>
+        {form.radio.map((radioQuestion, qIndex) => (
+          <div key={qIndex}>
+            <input
+              type="text"
+              value={radioQuestion.question}
+              onChange={(e) =>
+                handleRadioQuestionChange(qIndex, e.target.value)
+              }
+              placeholder="Question"
+            />
+            {radioQuestion.options.map((option, oIndex) => (
+              <label key={oIndex}>
                 <input
                   type="radio"
-                  name={group.groupName}
+                  name={radioQuestion.question}
                   value={option}
-                  checked={group.selectedOption === option}
-                  onChange={() => handleRadioChange(group.groupName, option)}
+                  checked={radioQuestion.selectedOption === option}
+                  onChange={() => handleRadioSelectionChange(qIndex, option)}
                 />
-                {option}
+                <input
+                  type="text"
+                  value={option}
+                  onChange={(e) =>
+                    handleRadioOptionTextChange(qIndex, oIndex, e.target.value)
+                  }
+                  placeholder="Option"
+                />
               </label>
             ))}
-            <button onClick={() => handleAddRadioOption(group.groupName)}>
+            <button onClick={() => handleAddRadioOption(qIndex)}>
               Add Option
             </button>
           </div>
         ))}
-        <button onClick={handleAddRadioGroup}>Add Radio Group</button>
+        <button onClick={handleAddRadioQuestion}>Add Radio Question</button>
       </div>
 
       <button onClick={handleSubmit}>Submit Form</button>

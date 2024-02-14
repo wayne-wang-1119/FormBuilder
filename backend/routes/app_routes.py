@@ -34,25 +34,29 @@ def create_form():
     with open(file_path, "w") as file:
         json.dump(form_data, file)
 
+    print(form_data)
     ##set up RAG here
     responses = {}
     for question in form_data.get("input", []):
+        # for question in questions:
         prompt = f"Based on the content {question['description']} what is the answer?\nAnswer the question: {question['title']}"
         # response = rag_chain.invoke(prompt)
         response = qa_chain({"query": prompt})["result"]
         responses[question["title"]] = response
 
     for question in form_data.get("radio", []):
-        prompt = f"Based on the content {question['options']} and the selected options {question['selectedOption']} what is the answer?\nAnswer the question: {question['groupName']}"
+        # for question in questions:
+        prompt = f"Based on the content {question['question']} being asked, the options available are {question['options']} and the selected option is {question['selectedOption']} what is the right answer?\nAnswer the question only using options from: {question['options']}, if not applicable respond any one from the list"
         # response = rag_chain.invoke(prompt)
         response = qa_chain({"query": prompt})["result"]
-        responses[question["groupName"]] = response
+        responses[question["question"]] = response
 
     for question in form_data.get("checkbox", []):
-        prompt = f"Based on the {question['label']} being selected as {question['value']} what is the answer?\nAnswer the question"
+        # for question in questions:
+        prompt = f"Based on the {question['question']} being selected as {question['selectedOptions']} out of the {question['options']} what are the right answers?\nAnswer the question only using options from {question['options']}"
         # response = rag_chain.invoke(prompt)
         response = qa_chain({"query": prompt})["result"]
-        responses[question["label"]] = response
+        responses[question["question"]] = response
 
     return jsonify({"success": True, "form_id": form_id, "response": responses}), 200
 
