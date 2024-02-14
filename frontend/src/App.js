@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { addCheckbox, addInput, addRadial } from "./services/formsServices";
 
 const App = () => {
+  const [responses, setResponses] = useState({});
   const [form, setForm] = useState({
     input: [{ title: "default title", description: "default description" }],
     checkbox: [{ label: "default label", value: true }],
@@ -29,6 +30,7 @@ const App = () => {
       if (response.ok) {
         const jsonResponse = await response.json();
         console.log("Form submitted successfully:", jsonResponse);
+        setResponses(jsonResponse.response || {});
       } else {
         console.error("Form submission failed");
       }
@@ -224,6 +226,15 @@ const App = () => {
       </div>
 
       <button onClick={handleSubmit}>Submit Form</button>
+      <div>
+        <h2>Responses</h2>
+        {Object.entries(responses).map(([question, answer], index) => (
+          <div key={index}>
+            <h4>{question}</h4>
+            <p>{answer}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
