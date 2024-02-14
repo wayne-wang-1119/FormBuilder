@@ -18,5 +18,20 @@ def hello_world():
     return "Hello, World!"
 
 
+@app.route("/forms")
+def create_form():
+    return "form creation"
+
+
+@app.route("/update/forms/{formId}")
+def update_form():
+    return "form updated"
+
+
+@app.route("view/forms/{formId}")
+def view_forms():
+    return "viewiing forms"
+
+
 if __name__ == "__main__":
     app.run(debug=True)
