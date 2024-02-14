@@ -1,37 +1,25 @@
-from flask import Flask, jsonify, send_from_directory
-from dotenv import load_dotenv
-from flask import request
-from flask_cors import CORS
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from models import db
+from routes import configure_routes
 import os
-import openai as OpenAI
-
-load_dotenv()
-OpenAI.api_key = os.getenv("OPENAI_API_KEY")
-
 
 app = Flask(__name__)
-CORS(app)
+
+# database_path = os.path.join(os.getcwd(), "db", "forms.db")
+# if not os.path.exists(database_path):
+#     os.makedirs(database_path)
+# app.config["SQLALCHEMY_DATABASE_URI"] = (
+#     f'sqlite:///{os.path.join(database_path, "database.db")}'
+# )
 
 
-@app.route("/")
-def hello_world():
-    return "Hello, World!"
+# db.init_app(app)
 
+# with app.app_context():
+#     db.create_all()
 
-@app.route("/forms")
-def create_form():
-    return jsonify({"success": "creation success"}), 200
-
-
-@app.route("/update/forms/{formId}")
-def update_form():
-    return "form updated"
-
-
-@app.route("/view/forms/{formId}")
-def view_forms():
-    return "viewiing forms"
-
+configure_routes(app)
 
 if __name__ == "__main__":
     app.run(debug=True)

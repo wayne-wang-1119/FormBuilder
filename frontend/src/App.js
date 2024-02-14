@@ -6,6 +6,13 @@ const App = () => {
     input: [{ title: "default title", description: "default description" }],
     checkbox: [{ label: "default label", value: true }],
     radial: [{ name: "default name", rating: 50 }],
+    radio: [
+      {
+        groupName: "defaultGroup",
+        options: ["Option 1", "Option 2"],
+        selectedOption: "Option 1",
+      },
+    ],
   });
 
   const handleSubmit = async () => {
@@ -89,6 +96,36 @@ const App = () => {
     setForm({ ...form, radial: [...form.radial, { name: "", rating: 0 }] });
   };
 
+  const handleRadioChange = (groupName, selectedOption) => {
+    const updatedRadios = form.radio.map((group) =>
+      group.groupName === groupName ? { ...group, selectedOption } : group
+    );
+    setForm({ ...form, radio: updatedRadios });
+  };
+
+  // Add Radio Group
+  const handleAddRadioGroup = () => {
+    const newGroup = {
+      groupName: `Group ${form.radio.length + 1}`,
+      options: ["Option 1"],
+      selectedOption: "Option 1",
+    };
+    setForm({ ...form, radio: [...form.radio, newGroup] });
+  };
+
+  // Add Radio Option
+  const handleAddRadioOption = (groupName) => {
+    const updatedRadios = form.radio.map((group) =>
+      group.groupName === groupName
+        ? {
+            ...group,
+            options: [...group.options, `Option ${group.options.length + 1}`],
+          }
+        : group
+    );
+    setForm({ ...form, radio: updatedRadios });
+  };
+
   return (
     <div>
       <h2>Form Builder</h2>
@@ -159,6 +196,31 @@ const App = () => {
           </div>
         ))}
         <button onClick={handleAddRadial}>Add Radial</button>
+      </div>
+      {/* Radios */}
+      <div>
+        <h3>Radio Buttons</h3>
+        {form.radio.map((group, index) => (
+          <div key={index}>
+            <h4>{group.groupName}</h4>
+            {group.options.map((option, optionIndex) => (
+              <label key={optionIndex}>
+                <input
+                  type="radio"
+                  name={group.groupName}
+                  value={option}
+                  checked={group.selectedOption === option}
+                  onChange={() => handleRadioChange(group.groupName, option)}
+                />
+                {option}
+              </label>
+            ))}
+            <button onClick={() => handleAddRadioOption(group.groupName)}>
+              Add Option
+            </button>
+          </div>
+        ))}
+        <button onClick={handleAddRadioGroup}>Add Radio Group</button>
       </div>
 
       <button onClick={handleSubmit}>Submit Form</button>
