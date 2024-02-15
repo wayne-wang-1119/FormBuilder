@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { addCheckbox, addInput, addRadial } from "./services/formsServices";
-
+import ReportGenerator from "./ReportGenerator";
 const App = () => {
   const [responses, setResponses] = useState({});
   const [form, setForm] = useState({
