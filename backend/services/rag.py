@@ -41,3 +41,70 @@ rag_chain = (
     | llm
     | StrOutputParser()
 )
+
+
+def process_form(form_data):
+    responses = {}
+    for question in form_data.get("input", []):
+        prompt = f"Based on the content {question['description']} what is the answer?\nAnswer the question: {question['title']}"
+        response = qa_chain({"query": prompt})["result"]
+        responses[question["title"]] = {
+            "description": question["description"],
+            "response": response,
+        }
+
+    # Process "radio" type questions
+    radio_responses = []
+    for question in form_data.get("radio", []):
+        prompt = f"Based on the content {question['question']} being asked, the options available are {question['options']} and the selected option is {question['selectedOption']} what is the right answer?\nAnswer the question only using options from: {question['options']}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the option you choose."
+        response = qa_chain({"query": prompt})["result"]
+        if response.endswith("."):
+            response = response[:-1]
+        # Assuming response is one of the options or a new option
+        updated_options = (
+            question["options"]
+            if response in question["options"]
+            else question["options"] + [response]
+        )
+        radio_responses.append(
+            {
+                "question": question["question"],
+                "options": updated_options,
+                "selectedOption": response,
+            }
+        )
+    # Process "checkbox" type questions
+    checkbox_responses = []
+    for question in form_data.get("checkbox", []):
+        prompt = f"Based on the question: {question['question']} with the total options {question['options']}, which ones are the right answers?\nAnswer the question only using options from {question['options']}, do not answer any options outside of these options. Do not answer in a sentence, answer only options seperated with a comma and end with a comma. Example: Knowldge, Business, /End of example.If not applicable, respond with any one from the list. Return only the options you choose."
+        response = qa_chain({"query": prompt})["result"]
+        response = [
+            option.strip() for option in response.split(",")
+        ]  # Split and trim each option
+
+        updated_options = question["options"]
+        selected_options = []
+
+        for option in response:
+            if (
+                option and option not in updated_options
+            ):  # Check if option is not already in the list
+                updated_options.append(option)
+            if option:  # Add to selected options if it's a valid, non-empty string
+                selected_options.append(option)
+
+        checkbox_responses.append(
+            {
+                "question": question["question"],
+                "options": updated_options,  # Use the updated options list
+                "selectedOptions": selected_options,
+            }
+        )
+
+    # Combine processed questions into a single response structure
+    final_responses = {
+        "input": responses,
+        "radio": radio_responses,
+        "checkbox": checkbox_responses,
+    }
+    return final_responses
