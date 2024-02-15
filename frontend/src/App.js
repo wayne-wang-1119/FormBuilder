@@ -21,7 +21,7 @@ const App = () => {
         selectedOptions: ["Adventure"],
       },
     ],
-    radial: [{ name: "default name", rating: 50 }],
+
     radio: [
       {
         question: "Which city is best for the setting of the story?",
@@ -31,9 +31,31 @@ const App = () => {
     ],
   });
 
+  // const handleSubmit = async () => {
+  //   const url = "http://localhost:5000/forms";
+  //   console.log(form);
+  //   try {
+  //     const response = await fetch(url, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(form),
+  //     });
+  //     if (response.ok) {
+  //       const jsonResponse = await response.json();
+  //       console.log("Form submitted successfully:", jsonResponse);
+  //       setResponses(jsonResponse.response || {});
+  //     } else {
+  //       console.error("Form submission failed");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //   }
+  // };
+
   const handleSubmit = async () => {
     const url = "http://localhost:5000/forms";
-    console.log(form);
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -43,11 +65,62 @@ const App = () => {
         body: JSON.stringify(form),
       });
       if (response.ok) {
-        const jsonResponse = await response.json();
-        console.log("Form submitted successfully:", jsonResponse);
-        setResponses(jsonResponse.response || {});
+        const { response: backendResponse, form_id } = await response.json();
+        console.log("Form submitted successfully:", backendResponse);
+
+        // Process and update the form state based on the backendResponse
+        const updatedForm = {
+          ...form,
+          // Process "input" questions
+          input: form.input.map((input) => {
+            const backendInputResponse = backendResponse.input[input.title];
+            // Directly use the backend response to update the input description if necessary
+            return backendInputResponse
+              ? {
+                  ...input,
+                  description:
+                    backendInputResponse.response || input.description,
+                }
+              : input;
+          }),
+          // Process "checkbox" questions
+          checkbox: form.checkbox.map((checkbox) => {
+            const backendCheckbox = backendResponse.checkbox.find(
+              (cb) => cb.question === checkbox.question
+            );
+            const updatedOptions = backendCheckbox
+              ? backendCheckbox.options
+              : checkbox.options;
+            const updatedSelectedOptions = backendCheckbox
+              ? [backendCheckbox.selectedOptions]
+              : checkbox.selectedOptions;
+            return {
+              ...checkbox,
+              options: updatedOptions,
+              selectedOptions: updatedSelectedOptions,
+            };
+          }),
+          // Process "radio" questions
+          radio: form.radio.map((radio) => {
+            const backendRadio = backendResponse.radio.find(
+              (r) => r.question === radio.question
+            );
+            const updatedOptions = backendRadio
+              ? backendRadio.options
+              : radio.options;
+            return {
+              ...radio,
+              options: updatedOptions,
+              selectedOption: backendRadio
+                ? backendRadio.selectedOption
+                : radio.selectedOption,
+            };
+          }),
+        };
+
+        setForm(updatedForm);
       } else {
-        console.error("Form submission failed");
+        console.error("Form submission failed with status:", response.status);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -277,30 +350,6 @@ const App = () => {
         <button onClick={handleAddCheckboxQuestion}>
           Add Checkbox Question
         </button>
-      </div>
-
-      {/* Radials */}
-      <div>
-        <h3>Radials</h3>
-        {form.radial.map((radial, index) => (
-          <div key={index}>
-            <input
-              type="text"
-              value={radial.name}
-              onChange={(e) => handleRadialNameChange(index, e.target.value)}
-              placeholder="Name"
-            />
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={radial.rating}
-              onChange={(e) => handleRadialChange(index, e.target.value)}
-            />
-            <span>{radial.rating}</span>
-          </div>
-        ))}
-        <button onClick={handleAddRadial}>Add Radial</button>
       </div>
       {/* Radios */}
       <div>

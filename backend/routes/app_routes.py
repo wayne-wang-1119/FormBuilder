@@ -37,28 +37,65 @@ def create_form():
     print(form_data)
     ##set up RAG here
     responses = {}
+    # Process "input" type questions
     for question in form_data.get("input", []):
-        # for question in questions:
         prompt = f"Based on the content {question['description']} what is the answer?\nAnswer the question: {question['title']}"
-        # response = rag_chain.invoke(prompt)
         response = qa_chain({"query": prompt})["result"]
-        responses[question["title"]] = response
+        responses[question["title"]] = {
+            "description": question["description"],
+            "response": response,
+        }
 
+    # Process "radio" type questions
+    radio_responses = []
     for question in form_data.get("radio", []):
-        # for question in questions:
-        prompt = f"Based on the content {question['question']} being asked, the options available are {question['options']} and the selected option is {question['selectedOption']} what is the right answer?\nAnswer the question only using options from: {question['options']}, if not applicable respond any one from the list"
-        # response = rag_chain.invoke(prompt)
+        prompt = f"Based on the content {question['question']} being asked, the options available are {', '.join(question['options'])} and the selected option is {question['selectedOption']} what is the right answer?\nAnswer the question only using options from: {', '.join(question['options'])}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the option you choose."
         response = qa_chain({"query": prompt})["result"]
-        responses[question["question"]] = response
+        # Assuming response is one of the options or a new option
+        updated_options = (
+            question["options"]
+            if response in question["options"]
+            else question["options"] + [response]
+        )
+        radio_responses.append(
+            {
+                "question": question["question"],
+                "options": updated_options,
+                "selectedOption": response,
+            }
+        )
 
+    # Process "checkbox" type questions
+    checkbox_responses = []
     for question in form_data.get("checkbox", []):
-        # for question in questions:
-        prompt = f"Based on the {question['question']} being selected as {question['selectedOptions']} out of the {question['options']} what are the right answers?\nAnswer the question only using options from {question['options']}"
-        # response = rag_chain.invoke(prompt)
+        prompt = f"Based on the question: {question['question']} with the total options {', '.join(question['options'])}, which ones are the right answers?\nAnswer the question only using options from {', '.join(question['options'])}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the options you choose."
         response = qa_chain({"query": prompt})["result"]
-        responses[question["question"]] = response
+        response = response.split(",")
+        if response not in question["options"]:
+            question["options"].append(response)
+        updated_options = question["options"]
+        selected_options = response
+        checkbox_responses.append(
+            {
+                "question": question["question"],
+                "options": updated_options,
+                "selectedOptions": selected_options,
+            }
+        )
 
-    return jsonify({"success": True, "form_id": form_id, "response": responses}), 200
+    # Combine processed questions into a single response structure
+    final_responses = {
+        "input": responses,  # Adjust according to how you want to structure this
+        "radio": radio_responses,
+        "checkbox": checkbox_responses,
+    }
+
+    print(final_responses)
+
+    return (
+        jsonify({"success": True, "form_id": form_id, "response": final_responses}),
+        200,
+    )
 
 
 @bp.route("/process/forms/<form_id>", methods=["GET"])
