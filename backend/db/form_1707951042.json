@@ -1,1 +1,0 @@
-{"input": [{"title": "default title", "description": "default description"}], "checkbox": [{"label": "default label", "value": true}], "radial": [{"name": "default name", "rating": 50}], "radio": [{"groupName": "defaultGroup", "options": ["Option 1", "Option 2"], "selectedOption": "Option 1"}]}
