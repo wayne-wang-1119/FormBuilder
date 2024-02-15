@@ -30,12 +30,16 @@ def create_form():
     """
     This function creates a form in the database, and query questions to generate a report for frontend
     """
-    form_data, form_id, db_folder = form_creator(request=request)
+    form_data, form_id, db_folder = form_creator(
+        request=request
+    )  ### gets metadata of the form
     print(form_data)
-    responses = process_form(form_data)
+    responses = process_form(
+        form_data
+    )  ### answer questions from the form and return a data structure readable to frontend
 
     pdf_file_path = os.path.join(db_folder, f"{form_id}.pdf")
-    generate_pdf(responses, pdf_file_path)
+    generate_pdf(responses, pdf_file_path)  ##generate reoirt
 
     print(responses)
 
