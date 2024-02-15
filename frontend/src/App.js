@@ -17,16 +17,16 @@ const App = () => {
     checkbox: [
       {
         question: "Which of these themes are present in the book?",
-        options: ["Adventure", "Romance", "Mystery"],
-        selectedOptions: ["Adventure"],
+        options: ["Business", "Knowledge", "Romance"],
+        selectedOptions: ["Romance"],
       },
     ],
 
     radio: [
       {
         question: "Which city is best for the setting of the story?",
-        options: ["New York", "Paris", "Tokyo"],
-        selectedOption: "New York",
+        options: ["New York", "Paris", "Tokyo", "Mars"],
+        selectedOption: "Mars",
       },
     ],
   });

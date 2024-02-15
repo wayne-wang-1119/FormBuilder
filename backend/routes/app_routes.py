@@ -70,7 +70,7 @@ def create_form():
     # Process "checkbox" type questions
     checkbox_responses = []
     for question in form_data.get("checkbox", []):
-        prompt = f"Based on the question: {question['question']} with the total options {question['options']}, which ones are the right answers?\nAnswer the question only using options from {question['options']}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the options you choose."
+        prompt = f"Based on the question: {question['question']} with the total options {question['options']}, which ones are the right answers?\nAnswer the question only using options from {question['options']}, do not answer any options outside of these options. Do not answer in a sentence, answer only options seperated with a comma and end with a comma. Example: Knowldge, Business, /End of example.If not applicable, respond with any one from the list. Return only the options you choose."
         response = qa_chain({"query": prompt})["result"]
         response = [
             option.strip() for option in response.split(",")
