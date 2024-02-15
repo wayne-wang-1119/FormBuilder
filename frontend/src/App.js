@@ -414,8 +414,8 @@ const App = () => {
       <div>
         {formId && (
           <a
-            href={`/download-pdf/${formId}`}
-            target="localhost:5000"
+            href={`http://localhost:5000/download-pdf/${formId}`}
+            target="_blank"
             rel="noopener noreferrer"
           >
             <button>Download PDF</button>

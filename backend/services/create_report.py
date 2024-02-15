@@ -71,7 +71,7 @@ def generate_pdf(data, file_path):
     # Check and add new page if needed
     def check_page(y_pos):
         nonlocal y_position, page_num
-        if y_pos < margin + 40:
+        if y_pos < margin + 40:  # Adjust threshold for new page
             c.showPage()
             page_num += 1
             y_position = height - margin
@@ -86,14 +86,14 @@ def generate_pdf(data, file_path):
         y_position -= 20
 
         for item in items:
-            check_page(y_position - 40)
             if isinstance(item, dict):
+                # Original handling for dictionary items
                 question = item.get("title" if section == "input" else "question", "")
                 c.drawString(margin + 10, y_position, f"Q: {question}")
                 y_position -= 15
 
                 if section == "input":
-                    description = item.get("description", "")
+                    description = item.get("response", "")
                     c.drawString(margin + 10, y_position, f"Desc: {description}")
                 else:
                     options = item.get("options", [])
@@ -115,8 +115,12 @@ def generate_pdf(data, file_path):
                             margin + 10, y_position, f"Selected: {selectedOption}"
                         )
                 y_position -= 20  # Additional space before next section
-                check_page(y_position)
+            elif isinstance(item, str):
+                # New handling for string items
+                c.drawString(margin + 10, y_position, f"Q: {item}")
+                y_position -= 20  # Adjust as needed
             else:
                 print(f"Unexpected item type in {section}: {item}")
+            check_page(y_position)
 
     c.save()
