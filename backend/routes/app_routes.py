@@ -1,13 +1,14 @@
 import time
 from models import db, Form
 import json
-from services import generate_response
+from services import generate_response, generate_pdf
 import os
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 import openai
 from dotenv import load_dotenv
 import html2text
+from flask import send_from_directory
 
 # from services.weaviate import client
 from services import rag_chain, qa_chain
@@ -102,6 +103,9 @@ def create_form():
         "checkbox": checkbox_responses,
     }
 
+    pdf_file_path = os.path.join(db_folder, f"{form_id}.pdf")
+    generate_pdf(final_responses, pdf_file_path)
+
     print(final_responses)
 
     return (
@@ -119,3 +123,20 @@ def process_form(form_id):
         form_data = json.load(file)
     response = generate_response(form_data)
     return jsonify({"response": response})
+
+
+@bp.route("/download-pdf/<form_id>", methods=["GET"])
+def download_pdf(form_id):
+    pdf_folder = "db"
+    pdf_file_name = f"{form_id}.pdf"
+    print(pdf_file_name)
+    print(os.getcwd())
+    try:
+        return send_from_directory(
+            directory=pdf_folder,
+            path=pdf_file_name,
+            as_attachment=True,
+            download_name=pdf_file_name,
+        )
+    except FileNotFoundError:
+        return jsonify({"error": "File not found"}), 404

@@ -3,6 +3,7 @@ import { addCheckbox, addInput, addRadial } from "./services/formsServices";
 import ReportGenerator from "./ReportGenerator";
 const App = () => {
   const [responses, setResponses] = useState({});
+  const [formId, setFormId] = useState("");
   const [form, setForm] = useState({
     input: [
       {
@@ -66,6 +67,8 @@ const App = () => {
       });
       if (response.ok) {
         const { response: backendResponse, form_id } = await response.json();
+        setFormId(form_id);
+        console.log(form_id);
         console.log("Form submitted successfully:", backendResponse);
 
         // Process and update the form state based on the backendResponse
@@ -384,6 +387,7 @@ const App = () => {
                   checked={radioQuestion.selectedOption === option}
                   onChange={() => handleRadioSelectionChange(qIndex, option)}
                 />
+                {option}
                 <input
                   type="text"
                   value={option}
@@ -403,14 +407,20 @@ const App = () => {
       </div>
 
       <button onClick={handleSubmit}>Submit Form</button>
+
       <div>
         <h2>Responses</h2>
-        {Object.entries(responses).map(([question, answer], index) => (
-          <div key={index}>
-            <h4>{question}</h4>
-            <p>{answer}</p>
-          </div>
-        ))}
+      </div>
+      <div>
+        {formId && (
+          <a
+            href={`/download-pdf/${formId}`}
+            target="localhost:5000"
+            rel="noopener noreferrer"
+          >
+            <button>Download PDF</button>
+          </a>
+        )}
       </div>
     </div>
   );
