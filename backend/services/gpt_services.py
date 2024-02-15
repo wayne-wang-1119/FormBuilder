@@ -4,6 +4,9 @@ import os
 
 
 def generate_response(form_data):
+    """
+    raw query of gpt for fun
+    """
     prompt = f"Here's information about a webpage: {json.dumps(form_data, indent=2)}. Answer questions about this webpage."
 
     response = openai.Completion.create(

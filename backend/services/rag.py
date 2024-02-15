@@ -12,9 +12,11 @@ from langchain_community.document_loaders import UnstructuredHTMLLoader
 # Load, chunk and index the contents of the blog.
 # loader = WebBaseLoader(web_paths=("https://www.paulgraham.com/greatwork.html/",))
 loader = UnstructuredHTMLLoader("data/data.html")
-docs = loader.load()
+docs = loader.load()  ##langchain, load data
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000, chunk_overlap=200
+)  ### embeddings
 splits = text_splitter.split_documents(docs)
 vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
 
@@ -23,7 +25,7 @@ prompt = hub.pull("rlm/rag-prompt")
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
 
-llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)  ### model config
 
 
 def format_docs(docs):
@@ -35,6 +37,7 @@ qa_chain = RetrievalQA.from_chain_type(
     retriever=vectorstore.as_retriever(search_kwargs={"k": 1}),
     chain_type_kwargs={"prompt": prompt},
 )
+### default set up, simplest possible RAG
 rag_chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()}
     | prompt
@@ -44,6 +47,10 @@ rag_chain = (
 
 
 def process_form(form_data):
+    """
+    for form data we process it iteratively to answer all the questions in the file
+    """
+    ## !FixME: fix here, add constraints, use Allen's advice of foreign key
     responses = {}
     for question in form_data.get("input", []):
         prompt = f"Based on the content {question['description']} what is the answer?\nAnswer the question: {question['title']}"

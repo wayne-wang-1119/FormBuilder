@@ -55,6 +55,10 @@ from reportlab.lib import colors
 
 
 def generate_pdf(data, file_path):
+    """ "
+    take any file path and generate a pdf using packages
+
+    """
     c = canvas.Canvas(file_path, pagesize=letter)
     width, height = letter
     margin = 50  # Added margin for aesthetics

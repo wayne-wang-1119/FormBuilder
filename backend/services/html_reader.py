@@ -5,6 +5,9 @@ from flask import json
 
 
 def form_creator(request):
+    """
+    reads in content from a request and parse it correctly and store it as data
+    """
     form_data = request.json
     form_id = secure_filename(f"form_{int(time.time())}")  # Simple ID generation
     db_folder = "db"
