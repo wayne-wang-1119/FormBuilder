@@ -19,6 +19,10 @@ import {
 } from "./services/formsServices";
 import ReportGenerator from "./ReportGenerator";
 
+import Input from "./components/Input";
+import Checkbox from "./components/Checkbox";
+import Radio from "./components/Radio";
+
 const App = () => {
   const [responses, setResponses] = useState({});
   const [formId, setFormId] = useState("");
@@ -53,152 +57,30 @@ const App = () => {
   return (
     <div>
       <h2>Form Builder</h2>
-      {/* Inputs */}
-      <div>
-        <h3>Inputs</h3>
-        {form.input.map((input, index) => (
-          <div key={index}>
-            <input
-              placeholder="Title"
-              value={input.title}
-              onChange={(e) =>
-                handleInputChange(form, index, "title", e.target.value, setForm)
-              }
-            />
-            <input
-              placeholder="Description"
-              value={input.description}
-              onChange={(e) =>
-                handleInputChange(
-                  form,
-                  index,
-                  "description",
-                  e.target.value,
-                  setForm
-                )
-              }
-            />
-          </div>
-        ))}
-        <button
-          variant="contained"
-          color="primary"
-          onClick={() => handleAddInput(form, setForm)} // Correct usage
-          style={{ marginTop: "10px" }}
-        >
-          Add Input
-        </button>
-      </div>
-
-      <div>
-        <h3>Checkbox Questions</h3>
-        {form.checkbox.map((checkboxQuestion, qIndex) => (
-          <div key={qIndex}>
-            <input
-              type="text"
-              value={checkboxQuestion.question}
-              onChange={(e) =>
-                handleCheckboxQuestionChange(
-                  form,
-                  setForm,
-                  qIndex,
-                  e.target.value
-                )
-              }
-              placeholder="Question"
-            />
-            {checkboxQuestion.options.map((option, oIndex) => (
-              <div key={oIndex}>
-                <input
-                  type="checkbox"
-                  checked={checkboxQuestion.selectedOptions.includes(option)}
-                  onChange={() =>
-                    handleCheckboxOptionChange(form, setForm, qIndex, option)
-                  }
-                />
-                <input
-                  type="text"
-                  value={option}
-                  onChange={(e) =>
-                    handleOptionTextChange(
-                      form,
-                      qIndex,
-                      oIndex,
-                      e.target.value,
-                      setForm
-                    )
-                  }
-                  placeholder="Option"
-                />
-              </div>
-            ))}
-            <button onClick={() => handleAddOption(form, qIndex, setForm)}>
-              Add Option
-            </button>
-          </div>
-        ))}
-        <button
-          variant="contained"
-          color="primary"
-          onClick={() => handleAddCheckboxQuestion(form, setForm)}
-        >
-          Add Checkbox Question
-        </button>
-      </div>
-      {/* Radios */}
-      <div>
-        <h3>Radio Questions</h3>
-        {form.radio.map((radioQuestion, qIndex) => (
-          <div key={qIndex}>
-            <input
-              type="text"
-              value={radioQuestion.question}
-              onChange={(e) =>
-                handleRadioQuestionChange(form, qIndex, e.target.value, setForm)
-              }
-              placeholder="Question"
-            />
-            {radioQuestion.options.map((option, oIndex) => (
-              <label key={oIndex}>
-                <input
-                  type="radio"
-                  name={radioQuestion.question}
-                  value={option}
-                  checked={radioQuestion.selectedOption === option}
-                  onChange={() =>
-                    handleRadioSelectionChange(form, qIndex, option, setForm)
-                  }
-                />
-                {option}
-                <input
-                  type="text"
-                  value={option}
-                  onChange={(e) =>
-                    handleRadioOptionTextChange(
-                      form,
-                      qIndex,
-                      oIndex,
-                      e.target.value,
-                      setForm
-                    )
-                  }
-                  placeholder="Option"
-                />
-              </label>
-            ))}
-            <button onClick={() => handleAddRadioOption(form, qIndex, setForm)}>
-              Add Option
-            </button>
-          </div>
-        ))}
-        <button
-          variant="contained"
-          color="primary"
-          onClick={() => handleAddRadioQuestion(form, setForm)}
-        >
-          Add Radio Question
-        </button>
-      </div>
+      <Input
+        form={form}
+        setForm={setForm}
+        handleInputChange={handleInputChange}
+        handleAddInput={handleAddInput}
+      />
+      <Checkbox
+        form={form}
+        setForm={setForm}
+        handleCheckboxQuestionChange={handleCheckboxQuestionChange}
+        handleCheckboxOptionChange={handleCheckboxOptionChange}
+        handleAddOption={handleAddOption}
+        handleOptionTextChange={handleOptionTextChange}
+        handleAddCheckboxQuestion={handleAddCheckboxQuestion}
+      />
+      <Radio
+        form={form}
+        setForm={setForm}
+        handleRadioQuestionChange={handleRadioQuestionChange}
+        handleRadioSelectionChange={handleRadioSelectionChange}
+        handleAddRadioOption={handleAddRadioOption}
+        handleRadioOptionTextChange={handleRadioOptionTextChange}
+        handleAddRadioQuestion={handleAddRadioQuestion}
+      />
 
       <button onClick={() => submitForm(form, setFormId, setForm)}>
         Submit Form
