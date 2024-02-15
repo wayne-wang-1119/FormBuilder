@@ -88,12 +88,22 @@ const App = () => {
             const backendCheckbox = backendResponse.checkbox.find(
               (cb) => cb.question === checkbox.question
             );
+            // const updatedOptions = backendCheckbox
+            //   ? backendCheckbox.options
+            //   : checkbox.options;
+            // const updatedSelectedOptions = backendCheckbox
+            //   ? [backendCheckbox.selectedOptions]
+            //   : checkbox.selectedOptions;
+
             const updatedOptions = backendCheckbox
               ? backendCheckbox.options
               : checkbox.options;
-            const updatedSelectedOptions = backendCheckbox
-              ? [backendCheckbox.selectedOptions]
-              : checkbox.selectedOptions;
+
+            const updatedSelectedOptions =
+              backendCheckbox && backendCheckbox.selectedOptions
+                ? backendCheckbox.selectedOptions
+                : checkbox.selectedOptions;
+
             return {
               ...checkbox,
               options: updatedOptions,
@@ -119,6 +129,7 @@ const App = () => {
         };
 
         setForm(updatedForm);
+        console.log(form);
       } else {
         console.error("Form submission failed with status:", response.status);
       }

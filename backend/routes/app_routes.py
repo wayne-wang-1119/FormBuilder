@@ -49,8 +49,10 @@ def create_form():
     # Process "radio" type questions
     radio_responses = []
     for question in form_data.get("radio", []):
-        prompt = f"Based on the content {question['question']} being asked, the options available are {', '.join(question['options'])} and the selected option is {question['selectedOption']} what is the right answer?\nAnswer the question only using options from: {', '.join(question['options'])}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the option you choose."
+        prompt = f"Based on the content {question['question']} being asked, the options available are {question['options']} and the selected option is {question['selectedOption']} what is the right answer?\nAnswer the question only using options from: {question['options']}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the option you choose."
         response = qa_chain({"query": prompt})["result"]
+        if response.endswith("."):
+            response = response[:-1]
         # Assuming response is one of the options or a new option
         updated_options = (
             question["options"]
@@ -68,17 +70,27 @@ def create_form():
     # Process "checkbox" type questions
     checkbox_responses = []
     for question in form_data.get("checkbox", []):
-        prompt = f"Based on the question: {question['question']} with the total options {', '.join(question['options'])}, which ones are the right answers?\nAnswer the question only using options from {', '.join(question['options'])}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the options you choose."
+        prompt = f"Based on the question: {question['question']} with the total options {question['options']}, which ones are the right answers?\nAnswer the question only using options from {question['options']}, do not answer any options outside of these options. If not applicable, respond with any one from the list. Return only the options you choose."
         response = qa_chain({"query": prompt})["result"]
-        response = response.split(",")
-        if response not in question["options"]:
-            question["options"].append(response)
+        response = [
+            option.strip() for option in response.split(",")
+        ]  # Split and trim each option
+
         updated_options = question["options"]
-        selected_options = response
+        selected_options = []
+
+        for option in response:
+            if (
+                option and option not in updated_options
+            ):  # Check if option is not already in the list
+                updated_options.append(option)
+            if option:  # Add to selected options if it's a valid, non-empty string
+                selected_options.append(option)
+
         checkbox_responses.append(
             {
                 "question": question["question"],
-                "options": updated_options,
+                "options": updated_options,  # Use the updated options list
                 "selectedOptions": selected_options,
             }
         )
