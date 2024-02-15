@@ -80,7 +80,14 @@ const App = () => {
             />
           </div>
         ))}
-        <button onClick={handleAddInput(form, setForm)}>Add Input</button>
+        <button
+          variant="contained"
+          color="primary"
+          onClick={() => handleAddInput(form, setForm)} // Correct usage
+          style={{ marginTop: "10px" }}
+        >
+          Add Input
+        </button>
       </div>
 
       <div>
@@ -130,7 +137,11 @@ const App = () => {
             </button>
           </div>
         ))}
-        <button onClick={handleAddCheckboxQuestion(form, setForm)}>
+        <button
+          variant="contained"
+          color="primary"
+          onClick={() => handleAddCheckboxQuestion(form, setForm)}
+        >
           Add Checkbox Question
         </button>
       </div>
@@ -180,7 +191,11 @@ const App = () => {
             </button>
           </div>
         ))}
-        <button onClick={handleAddRadioQuestion(form, setForm)}>
+        <button
+          variant="contained"
+          color="primary"
+          onClick={() => handleAddRadioQuestion(form, setForm)}
+        >
           Add Radio Question
         </button>
       </div>
