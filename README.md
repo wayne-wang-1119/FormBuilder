@@ -4,6 +4,9 @@ template for form builder, seperated into frontend and backend
 
 ### Setup
 
+create a .env file in working directory (parallel to backend, frontend)
+paste OPENAI_API_KEY = "sk-\*\*" in it.
+
 to run backend,
 
 ```bash
