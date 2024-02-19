@@ -3,5 +3,10 @@ flask-cors
 python-dotenv
 openai
 flask_sqlalchemy
-langchain
+langchain==0.1.6
+langchain-community==0.0.19
+langchain-core==0.1.23
 html2text
+bs4
+langchain_openai
+unstructured
