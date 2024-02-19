@@ -7,6 +7,12 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.document_loaders import UnstructuredHTMLLoader
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+openai_key = os.getenv("OPENAI_API_KEY")
 
 
 # Load, chunk and index the contents of the blog.
@@ -18,7 +24,9 @@ text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000, chunk_overlap=200
 )  ### embeddings
 splits = text_splitter.split_documents(docs)
-vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+vectorstore = Chroma.from_documents(
+    documents=splits, embedding=OpenAIEmbeddings(openai_api_key=openai_key)
+)
 
 retriever = vectorstore.as_retriever()
 prompt = hub.pull("rlm/rag-prompt")

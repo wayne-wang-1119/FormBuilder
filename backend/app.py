@@ -4,6 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db
 from routes import configure_routes
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)

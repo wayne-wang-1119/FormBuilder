@@ -10,3 +10,4 @@ html2text
 bs4
 langchain_openai
 unstructured
+chromadb
